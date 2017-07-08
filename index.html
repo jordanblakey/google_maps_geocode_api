@@ -1,0 +1,64 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <title>Google Maps Geocode API App</title>
+</head>
+<body>
+  <div class="container">
+    <div id="formatted-address"></div>
+    <div id="address-components"></div>
+  </div>
+
+
+  <script type="text/javascript">
+    // Call Geocode
+    geocode();
+
+    function geocode(){
+      var location = '22 Main St Boston MA';
+      axios.get('https://maps.googleapis.com/maps/api/geocode/json', {
+        params:{
+          address: location,
+          key: 'AIzaSyCL4SjVzK-ZznKzI50Ky9KYjqZQmkKw8R0'
+        }
+      })
+      .then(function(response){
+        // Log full response
+        console.log(response);
+
+        // Formatted address
+        var formattedAddress = response.data.results[0].formatted_address;
+        var formattedAddressOutput = `
+        <ul class="list-group">
+          <li class="list-group-item">${formattedAddress}</li>
+        </ul>
+        `
+
+        // Address Components
+        var addressComponents = response.data.results[0].address_components;
+        var addressComponentsOutput = '<ul class="list-group">';
+        for (var i = 0; i < addressComponents.length; i++){
+          addressComponentsOutput += `
+            <li class="list-group-item"><strong>${addressComponents[i].types[0]}</strong>: ${addressComponents[i].long_name}</li>
+          `;
+        }
+        addressComponentsOutput += '</ul>';
+
+        // Output to app
+        document.getElementById('formatted-address').innerHTML = formattedAddressOutput;
+        document.getElementById('address-components').innerHTML = addressComponentsOutput;
+      })
+      .catch(function(error){
+        console.log(error);
+      });
+    }
+  </script>
+</body>
+</html>
